@@ -4,9 +4,8 @@ namespace CMS\Library;
 use Cyan\Library\ApplicationWeb;
 use Cyan\Library\FactoryPlugin;
 use Cyan\Library\FilesystemPath;
-use Cyan\Library\RouterException;
 use Cyan\Library\ReflectionClass;
-use Cyan\Library\TraitEvent;
+use Cyan\Library\RouterException;
 
 /**
  * Class Application
@@ -14,8 +13,6 @@ use Cyan\Library\TraitEvent;
  */
 class Application extends ApplicationWeb
 {
-    use TraitEvent;
-
     /**
      * Application Path
      *
@@ -128,10 +125,19 @@ class Application extends ApplicationWeb
 
     /**
      * Assign component routes
+     *
+     * @param $path
      */
     public function loadComponentRoutes($path)
     {
         $app_config = $this->getConfig();
+
+        if (isset($app_config['sef'])) {
+            $this->Router->setSef($app_config['sef']);
+        } else {
+            $Cyan = \Cyan::initialize();
+            $this->Router->setSef($Cyan->Router->getSef());
+        }
 
         $components_path = glob($path.'/*', GLOB_ONLYDIR);
         foreach ($components_path as $component_path) {
@@ -155,34 +161,7 @@ class Application extends ApplicationWeb
                 // check route routes
                 if (isset($config_routes['routes'])) {
                     foreach ($config_routes['routes'] as $route_uri => $route_config) {
-                        // add via to use GET if its missing
-                        if (!isset($route_config['via'])) {
-                            $route_config['via'] = 'get';
-                        }
-
-                        if (!isset($route_config['handler'])) {
-                            $route_config['handler'] = [
-                                'class_name' => sprintf('%sController', ucfirst($component_name)),
-                                'method' => 'actionIndex'
-                            ];
-                        } elseif (!isset($route_config['handler']['class_name'])) {
-                            $route_config['handler']['class_name'] = sprintf('%sController', ucfirst($component_name));
-                        } elseif (!isset($route_config['handler']['method'])) {
-                            $route_config['handler']['method'] = 'actionIndex';
-                        }
-
-                        $required_route_keys = ['route_name'];
-                        foreach ($required_route_keys as $route_key) {
-                            if (!isset($route_config[$route_key])) {
-                                throw new RouterException(sprintf('%s is undefined at "%s" in %s',$route_key, $route_uri, $route_path));
-                            }
-                        }
-
-                        $allowed_methods = $route_config['via'];
-                        unset($route_config['via']);
-                        $route_name = $route_config['route_name'];
-                        unset($route_config['route_name']);
-                        $this->Router->route($allowed_methods, $route_name, $route_uri, $route_config);
+                        $this->assignRoute($route_uri, $route_config, $component_name, $route_path);
                     }
                 }
 
@@ -245,11 +224,51 @@ class Application extends ApplicationWeb
     }
 
     /**
+     * Assign route to application
+     *
+     * @param $route_uri
+     * @param $route_config
+     * @param $component_name
+     * @param $route_path
+     */
+    protected function assignRoute($route_uri, $route_config, $component_name, $route_path)
+    {
+        // add via to use GET if its missing
+        if (!isset($route_config['via'])) {
+            $route_config['via'] = 'get';
+        }
+
+        if (!isset($route_config['handler'])) {
+            $route_config['handler'] = [
+                'class_name' => sprintf('%sController', ucfirst($component_name)),
+                'method' => 'actionIndex'
+            ];
+        } elseif (!isset($route_config['handler']['class_name'])) {
+            $route_config['handler']['class_name'] = sprintf('%sController', ucfirst($component_name));
+        } elseif (!isset($route_config['handler']['method'])) {
+            $route_config['handler']['method'] = 'actionIndex';
+        }
+
+        $required_route_keys = ['route_name'];
+        foreach ($required_route_keys as $route_key) {
+            if (!isset($route_config[$route_key])) {
+                throw new RouterException(sprintf('%s is undefined at "%s" in %s',$route_key, $route_uri, $route_path));
+            }
+        }
+
+        $allowed_methods = $route_config['via'];
+        unset($route_config['via']);
+        $route_name = $route_config['route_name'];
+        unset($route_config['route_name']);
+        $this->Router->route($allowed_methods, $route_name, $route_uri, $route_config);
+    }
+
+    /**
      * @param $class_name
      * @param $class_path
      * @param string $instance_of
      */
-    private function checkClass($class_name, $class_path, $instance_of = 'Cyan\Library\Controller')
+    protected function checkClass($class_name, $class_path, $instance_of = 'Cyan\Library\Controller')
     {
         if (!class_exists($class_name)) {
             throw new ApplicationException(sprintf('Class "%s" not found in %s',$class_name, $class_path));
