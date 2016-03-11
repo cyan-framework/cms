@@ -1,5 +1,6 @@
 <?php
 namespace CMS\Library;
+
 use Cyan\Library\TraitContainer;
 use Cyan\Library\TraitError;
 use Cyan\Library\TraitEvent;
@@ -10,8 +11,6 @@ use Cyan\Library\TraitEvent;
  */
 class ModelAdmin extends Model
 {
-    use TraitContainer, TraitEvent, TraitError;
-
     /**
      * @param $key
      * @return mixed

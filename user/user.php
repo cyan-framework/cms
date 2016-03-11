@@ -1,11 +1,13 @@
 <?php
 namespace CMS\Library;
 use Cyan\Library\ApplicationWeb;
+use Cyan\Library\Config;
+use Cyan\Library\Database;
+use Cyan\Library\DatabaseTable;
 use Cyan\Library\TraitContainer;
 use Cyan\Library\TraitError;
 use Cyan\Library\TraitEvent;
 use Cyan\Library\TraitPrototype;
-use Cyan\Library\FactoryPlugin;
 use Cyan\Library\TraitSingleton;
 
 /**
@@ -113,7 +115,7 @@ class User
             $_SESSION['username'],
             $_SESSION['login_string'])) {
 
-            $table = $this->getContainer('table');
+            $table = $this->getContainer('table_user');
 
             $user_id = $_SESSION['user_id'];
             $login_string = $_SESSION['login_string'];
@@ -149,41 +151,25 @@ class User
     }
 
     /**
-     * Return user data
+     * Return user email and profile data
      *
      * @return array
      */
     public function getData()
     {
         if (isset($_SESSION['user_id'])) {
-            $table = $this->getContainer('table');
+            $user_table = $this->getContainer('table_user');
+            $profile_table = $this->getContainer('table_profile');
+            /** @var Database $Dbo */
             $Dbo = $this->getContainer('application')->Database->connect();
 
-            $userInfo = $Dbo->table($table['table_name'],$_SESSION['user_id'])->fetch();
+            $Schema = $Dbo->Schema();
+            $Schema->setBackReference($user_table['table_name'],$profile_table['table_name'],'user_profile_id');
+            $Schema->setReference($profile_table['table_name'],$user_table['table_name'],'id');
 
-            return $userInfo->getData();
-        } else {
-            return [];
-        }
-    }
+            $userInfo = $Dbo->table($profile_table['table_name'])->where($user_table['table_name'].'.'.$user_table['table_key'].' = ?')->select('*')->select('user.email')->parameters([$this->getID()])->fetch();
 
-    /**
-     * Return Profile Data
-     *
-     * @return array
-     */
-    public function getProfile()
-    {
-        if (isset($_SESSION['user_id'])) {
-            $App = $this->getContainer('application');
-
-            $table_config = $this->Cyan->Finder->getIdentifier('components:com_users.config.table.profile');
-
-            $Dbo = $App->Database->connect();
-
-            $profileInfo = $Dbo->table($table_config['table_name'])->where('user_id', $_SESSION['user_id'])->fetch();
-
-            return $profileInfo;
+            return $userInfo;
         } else {
             return [];
         }
@@ -243,11 +229,12 @@ class User
         $App = $this->getContainer('application');
         $Dbo = $App->Database->connect();
 
-        $table = $this->getContainer('table');
+        $table = $this->getContainer('table_user');
 
-        $userInfo = $Dbo->table($table['table_name'],$this->getID());
+        /** @var DatabaseTable $userInfo */
+        $userInfo = $Dbo->table($table['table_name'])->where($table['table_key'].' = ?')->parameters([$this->getID()]);
 
-        return empty($userInfo) ? 1 : $userInfo->user_groups_id;
+        return !empty($userInfo) ? 1 : $userInfo->user_group_id;
     }
 
     /**
@@ -259,13 +246,13 @@ class User
     {
         $parts = explode('.', $identifier);
 
-        $acl = $this->getPlan();
+        $acl = $this->getPermissions();
 
         if (empty($acl)) {
             return $default;
         }
 
-        return $this->_arraySearch([$acl], $parts, $default, 0);
+        return $acl->get($identifier, $default);
     }
 
     /**
@@ -273,13 +260,29 @@ class User
      *
      * @return array|\ArrayObject|mixed
      */
-    public function getPlan()
+    public function getPermissions()
     {
         /** @var ApplicationWeb $App */
         $App = $this->getContainer('application');
         $Dbo = $App->Database->connect();
 
+        $Dbo->schema()->setBackReference('extension','user_group_rules','id');
+        $Dbo->schema()->setBackReference('extension_action','user_group_rules','id');
 
+        $rows = $Dbo->table('user_group_rules')
+            ->select('extension.name AS extension_name')
+            ->select('extension_action.name AS action_name')
+            ->where('user_group_id = ?')
+            ->parameters([$this->getUsergroup()])->fetchAll();
+
+        $acl = [];
+        foreach ($rows as $row) {
+            $acl[$row['extension_name']][$row['action_name']] = true;
+        }
+
+        $configAcl = new Config();
+        $configAcl->loadArray($acl);
+        return $configAcl;
     }
 
 

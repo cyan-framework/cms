@@ -4,14 +4,9 @@ namespace CMS\Library;
 use Cyan\Library\ControllerException;
 use Cyan\Library\Form;
 use Cyan\Library\ReflectionClass;
-use Cyan\Library\TraitContainer;
-use Cyan\Library\TraitEvent;
-use Cyan\Library\TraitPrototype;
 
 class Controller extends \Cyan\Library\Controller
 {
-    use TraitPrototype, TraitContainer, TraitEvent;
-
     /**
      * Component Base Path
      *

@@ -60,12 +60,12 @@ class Application extends ApplicationWeb
         $app_config = $this->getConfig();
 
         $database_enviroment = isset($app_config['database_environment']) ? $app_config['database_environment'] : 'development' ;
-        $database_enviroment_identifier = sprintf('%s:config.database.%s',$this->name,$database_enviroment);
+        $database_enviroment_identifier = sprintf('config:database.%s.%s',$this->name,$database_enviroment);
         $database_config = $this->Cyan->Finder->getIdentifier($database_enviroment_identifier,[]);
         if (!empty($database_config)) {
             $this->Database->setConfig($database_config)->connect();
         } else {
-            throw new ApplicationException(spritnf('Database Enviroment "%s" not found in path %s',$database_enviroment,$this->Cyan->Finder->getPath($database_enviroment_identifier)));
+            throw new ApplicationException(sprintf('Database Enviroment "%s" not found in path %s',$database_enviroment,$this->Cyan->Finder->getPath($database_enviroment_identifier)));
         }
 
         // load plugins
@@ -198,6 +198,8 @@ class Application extends ApplicationWeb
                         $this->Router->setDefaultRoute($config_routes['config']['default_route'],$config_routes['default_route_parameters']);
                     }
                 }
+            } else {
+                $this->componentRouteNotFound($component_path, $component_name);
             }
 
             // import default controller php if found
@@ -231,6 +233,15 @@ class Application extends ApplicationWeb
                 $this->loadComponentRoutes($component_components_path);
             }
         }
+    }
+
+    /**
+     * @param $component_path
+     * @param $component_name
+     */
+    protected function componentRouteNotFound($component_path, $component_name)
+    {
+
     }
 
     /**
