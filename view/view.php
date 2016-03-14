@@ -7,39 +7,27 @@ namespace CMS\Library;
  */
 class View extends \Cyan\Library\View
 {
-    /**
-     * Return link
-     *
-     * @param $name
-     * @param array $config
-     */
-    public function linkTo($name, array $config = [])
-    {
-
-        return !$this->hasContainer('application') ? $name : $this->getContainer('application')->Router->generate($name, $config);
-    }
+    use TraitMVC;
 
     /**
-     * Translate a text
+     * Set Layout
      *
-     * @param $text
-     * @return mixed
-     */
-    public function translate($text)
-    {
-        return !$this->hasContainer('application') ? $text : $this->getContainer('application')->Text->translate($text);
-    }
-
-    /**
-     * Translate a text using sprintf
+     * @param $layout
      *
-     * @param $text
-     * @return mixed
+     * @return $this
+     *
+     * @since 1.0.0
      */
-    public function sprintf()
+    public function setLayout($layout)
     {
-        $args = func_get_args();
+        if (!is_string($layout)) {
+            throw new ViewException(sprintf('Layout must be string, %s given.',gettype($layout)));
+        }
+        $this->layout = Layout::getInstance($layout,$layout,[]);
+        if (!$this->layout->hasContainer('view')) {
+            $this->layout->setContainer('view', $this);
+        }
 
-        return !$this->hasContainer('application') ? call_user_func_array('sprintf', $args) : call_user_func_array([$this->getContainer('application')->Text,'srptinf'], $args);
+        return $this;
     }
 }

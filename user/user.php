@@ -167,7 +167,11 @@ class User
             $Schema->setBackReference($user_table['table_name'],$profile_table['table_name'],'user_profile_id');
             $Schema->setReference($profile_table['table_name'],$user_table['table_name'],'id');
 
-            $userInfo = $Dbo->table($profile_table['table_name'])->where($user_table['table_name'].'.'.$user_table['table_key'].' = ?')->select('*')->select('user.email')->parameters([$this->getID()])->fetch();
+            $userInfo = $Dbo->table($profile_table['table_name'])
+                            ->where($user_table['table_name'].'.'.$user_table['table_key'].' = ?')
+                            ->select('*')
+                            ->select('user.email')
+                            ->parameters([$this->getID()])->fetch();
 
             return $userInfo;
         } else {
