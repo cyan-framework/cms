@@ -1,5 +1,7 @@
 <?php
-class ArchitectureAdapterPlugin extends CMS\Library\ArchitectureAdapter
+namespace Cyan\Library;
+
+class ExtensionTypePlugin extends \Cyan\Library\ExtensionType
 {
     use \Cyan\Library\TraitSingleton;
 
@@ -12,7 +14,7 @@ class ArchitectureAdapterPlugin extends CMS\Library\ArchitectureAdapter
             throw new \CMS\Library\ArchitectureException(sprintf('path %s not exists',$path));
         }
 
-        $Cyan = Cyan::initialize();
+        $Cyan = \Cyan::initialize();
         $App = $this->getContainer('application');
         $plugin_manager = $App->getContainer('factory_plugin');
 

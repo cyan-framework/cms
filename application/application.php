@@ -2,6 +2,8 @@
 namespace CMS\Library;
 
 use Cyan\Library\ApplicationWeb;
+use Cyan\Library\Extension;
+use Cyan\Library\ExtensionTypeComponent;
 use Cyan\Library\FactoryPlugin;
 use Cyan\Library\FilesystemPath;
 use Cyan\Library\ReflectionClass;
@@ -53,7 +55,6 @@ class Application extends ApplicationWeb
 
         $this->setContainer('factory_plugin', new FactoryPlugin());
 
-
         $app_config = $this->getConfig();
 
         $database_enviroment = isset($app_config['database_environment']) ? $app_config['database_environment'] : 'development' ;
@@ -64,6 +65,8 @@ class Application extends ApplicationWeb
         } else {
             throw new ApplicationException(sprintf('Database Enviroment "%s" not found in path %s',$database_enviroment,$this->Cyan->Finder->getPath($database_enviroment_identifier)));
         }
+
+        Extension::addIncludePath($this->Cyan->Finder->getPath('vendor:cms.extension.type'));
 
         // load plugins
         $this->loadPlugins();
@@ -89,8 +92,8 @@ class Application extends ApplicationWeb
      */
     private function loadPlugins()
     {
-        /** @var ArchitectureAdapterPlugin $pluginArchitecture */
-        $pluginArchitecture = Architecture::getAdapter('plugin');
+        /** @var ExtensionTypePlugin $pluginArchitecture */
+        $pluginArchitecture = Extension::get('plugin');
         $pluginArchitecture->setContainer('application', $this);
         $pluginArchitecture->register($this->Cyan->Finder->getResource('plugins'));
     }
@@ -112,8 +115,8 @@ class Application extends ApplicationWeb
         }
 
         $components_path = glob($path.'/*', GLOB_ONLYDIR);
-        /** @var \ArchitectureAdapterComponent $componentArchitecture */
-        $componentArchitecture = Architecture::getAdapter('component');
+        /** @var ExtensionTypeComponent $componentArchitecture */
+        $componentArchitecture = Extension::get('component');
         $componentArchitecture->setContainer('application', $this);
         foreach ($components_path as $component_path) {
             $componentArchitecture->resetPath();

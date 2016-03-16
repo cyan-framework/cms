@@ -26,19 +26,11 @@ class User
     protected $lang_id = null;
 
     /**
-     * Base identifier app
-     *
-     * @var string
+     * User constructor.
      */
-    private $baseIdentifier = 'app';
-
-    /**
-     * @param $baseIdentifier
-     */
-    public function __construct($baseIdentifier)
+    public function __construct()
     {
         $this->Cyan = \Cyan::initialize();
-        $this->baseIdentifier = $baseIdentifier;
     }
 
     /**
@@ -115,7 +107,7 @@ class User
             $_SESSION['username'],
             $_SESSION['login_string'])) {
 
-            $table = $this->getContainer('table_user');
+            $table = $this->getContainer('table_user')->getConfig();
 
             $user_id = $_SESSION['user_id'];
             $login_string = $_SESSION['login_string'];
@@ -158,8 +150,8 @@ class User
     public function getData()
     {
         if (isset($_SESSION['user_id'])) {
-            $user_table = $this->getContainer('table_user');
-            $profile_table = $this->getContainer('table_profile');
+            $user_table = $this->getContainer('table_user')->getConfig();
+            $profile_table = $this->getContainer('table_profile')->getConfig();
             /** @var Database $Dbo */
             $Dbo = $this->getContainer('application')->Database->connect();
 
@@ -233,7 +225,7 @@ class User
         $App = $this->getContainer('application');
         $Dbo = $App->Database->connect();
 
-        $table = $this->getContainer('table_user');
+        $table = $this->getContainer('table_user')->getConfig();
 
         /** @var DatabaseTable $userInfo */
         $userInfo = $Dbo->table($table['table_name'])->where($table['table_key'].' = ?')->parameters([$this->getID()]);

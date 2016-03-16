@@ -1,5 +1,7 @@
 <?php
-class ArchitectureAdapterComponent extends CMS\Library\ArchitectureAdapter
+namespace Cyan\Library;
+
+class ExtensionTypeComponent extends \Cyan\Library\ExtensionType
 {
     use \Cyan\Library\TraitSingleton;
 
@@ -16,7 +18,7 @@ class ArchitectureAdapterComponent extends CMS\Library\ArchitectureAdapter
     public function register($base_path)
     {
         if (!file_exists($base_path) && !is_dir($base_path)) {
-            throw new \CMS\Library\ArchitectureException(sprintf('path %s not exists',$base_path));
+            throw new ExtensionException(sprintf('path %s not exists',$base_path));
         }
 
         if (!isset($this->base_path)) {
@@ -31,7 +33,7 @@ class ArchitectureAdapterComponent extends CMS\Library\ArchitectureAdapter
         $this->registerRoutes();
 
         if ($this->base_path == $base_path) {
-            $pluginArchitecture = \CMS\Library\Architecture::getAdapter('plugin');
+            $pluginArchitecture = Extension::get('plugin');
             $pluginArchitecture->register($this->base_path);
         }
 
@@ -52,7 +54,7 @@ class ArchitectureAdapterComponent extends CMS\Library\ArchitectureAdapter
         foreach ($types as $type) {
             $class_name_parts = [];
             $class_name_parts[] = ucfirst($this->component_name);
-            $file_path = \Cyan\Library\FilesystemPath::find(self::addIncludePath(), $type.'.php');
+            $file_path = FilesystemPath::find(self::addIncludePath(), $type.'.php');
             if ($file_path) {
                 if (strpos($file_path,$App->getName()) !== false) {
                     $class_name_parts[] = ucfirst($App->getName());
@@ -96,7 +98,7 @@ class ArchitectureAdapterComponent extends CMS\Library\ArchitectureAdapter
     private function registerRoutes()
     {
         $App = $this->getContainer('application');
-        $route_path = \Cyan\Library\FilesystemPath::find(self::addIncludePath(), 'routes.php');
+        $route_path = FilesystemPath::find(self::addIncludePath(), 'routes.php');
 
         if ($route_path) {
             $config_routes = require_once $route_path;
@@ -163,7 +165,7 @@ class ArchitectureAdapterComponent extends CMS\Library\ArchitectureAdapter
         $required_route_keys = ['route_name'];
         foreach ($required_route_keys as $route_key) {
             if (!isset($route_config[$route_key])) {
-                throw new \Cyan\Library\RouterException(sprintf('%s is undefined at "%s" in %s',$route_key, $route_uri, $route_path));
+                throw new RouterException(sprintf('%s is undefined at "%s" in %s',$route_key, $route_uri, $route_path));
             }
         }
 
