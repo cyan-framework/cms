@@ -5,9 +5,7 @@ use Cyan\Library\ApplicationWeb;
 use Cyan\Library\Extension;
 use Cyan\Library\ExtensionTypeComponent;
 use Cyan\Library\FactoryPlugin;
-use Cyan\Library\FilesystemPath;
 use Cyan\Library\ReflectionClass;
-use Cyan\Library\RouterException;
 
 /**
  * Class Application

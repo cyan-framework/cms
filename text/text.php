@@ -5,7 +5,7 @@ namespace CMS\Library;
  * Class String
  * @package CMS\Library
  */
-abstract class Text
+class Text extends \Cyan\Library\Text
 {
     /**
      *

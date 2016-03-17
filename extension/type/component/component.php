@@ -1,6 +1,8 @@
 <?php
 namespace Cyan\Library;
 
+require_once 'helper' . DIRECTORY_SEPARATOR . 'helper.php';
+
 class ExtensionTypeComponent extends \Cyan\Library\ExtensionType
 {
     use \Cyan\Library\TraitSingleton;
@@ -56,21 +58,18 @@ class ExtensionTypeComponent extends \Cyan\Library\ExtensionType
             $class_name_parts[] = ucfirst($this->component_name);
             $file_path = FilesystemPath::find(self::addIncludePath(), $type.'.php');
             if ($file_path) {
-                if (strpos($file_path,$App->getName()) !== false) {
-                    $class_name_parts[] = ucfirst($App->getName());
-                }
-                $class_name_parts[] = ucfirst($type);
-
+                $clean_path = str_replace('.'.pathinfo($file_path, PATHINFO_EXTENSION),null,$file_path);
+                $class_name_parts = array_map('ucfirst', array_filter(explode(DIRECTORY_SEPARATOR,str_replace('com_','',str_replace($base_path,null,$clean_path)))));
+                array_unshift($class_name_parts,ucfirst($this->component_name));
                 $class_name = implode($class_name_parts);
                 $Cyan->Autoload->registerClass($class_name, $file_path);
             }
 
             foreach (self::addIncludePath() as $search_path) {
                 foreach (glob($search_path.DIRECTORY_SEPARATOR.$type.DIRECTORY_SEPARATOR.'*.php') as $file_path) {
-                    $class_name_parts = [];
-                    $class_name_parts[] = ucfirst($this->component_name);
-                    $class_name_parts[] = ucfirst($type);
-                    $class_name_parts[] = ucfirst(basename($file_path,'.php'));
+                    $clean_path = str_replace('.'.pathinfo($file_path, PATHINFO_EXTENSION),null,$file_path);
+                    $class_name_parts = array_map('ucfirst', array_filter(explode(DIRECTORY_SEPARATOR,str_replace('com_','',str_replace($base_path,null,$clean_path)))));
+                    array_unshift($class_name_parts,ucfirst($this->component_name));
                     $class_name = implode($class_name_parts);
                     $Cyan->Autoload->registerClass($class_name, $file_path);
                 }

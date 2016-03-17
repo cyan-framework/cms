@@ -2,7 +2,6 @@
 namespace CMS\Library;
 
 use Cyan\Library\Form;
-use Cyan\Library\Layout;
 use Cyan\Library\ReflectionClass;
 use Cyan\Library\TraitException;
 
@@ -34,25 +33,26 @@ trait TraitMVC
      */
     public function getModel($name)
     {
+        $Cyan = \Cyan::initialize();
+
         if (strpos($name,':') === false) {
-            $model_identifier = sprintf('components:%s.model.%s', $this->getComponentName(), $name);
+            $prefix = [ucfirst(substr($this->getComponentName(),4)),ucfirst($Cyan->getContainer('application')->getName())];
+            $sufix = ucfirst($name);
         } else {
-            $model_identifier = $name;
+            $parse = parse_url($name);
+            $parts = explode(':', $parse['path']);
+
+            $component = array_shift($parts);
+            $name = end($parts);
+            $prefix = [ucfirst(substr($component,4)),ucfirst($Cyan->getContainer('application')->getName())];
+            $sufix = ucfirst($name);
         }
 
-        $parse = parse_url($model_identifier);
-        $parts = explode('.',$parse['path']);
-        $component_name = ucfirst(substr($parts[0],4));
-        $model_name = ucfirst(end($parts));
-        $class_name = sprintf('%sModel%s', $component_name,$model_name);
-        unset($parts);
-        unset($parse);
-
-        $model_path = $this->Cyan->Finder->getPath($model_identifier,'.php');
-        if (!file_exists($model_path)) {
-            throw new ModelException(sprintf('Model "%s" not found in path: %s', $model_name, $model_path));
+        $class_name = sprintf('%sModel%s',implode($prefix),$sufix);
+        if (!class_exists($class_name)) {
+            array_pop($prefix);
+            $class_name = sprintf('%sModel%s',implode($prefix),$sufix);
         }
-        require_once $model_path;
         return $this->getClass($class_name,'CMS\Library\Model');
     }
 
@@ -82,20 +82,31 @@ trait TraitMVC
 
     public function getView($name, $config = [])
     {
+        $Cyan = \Cyan::initialize();
+
         if (strpos($name,':') === false) {
-            $prefix = ucfirst(substr($this->getComponentName(),4));
+            $prefix = [ucfirst(substr($this->getComponentName(),4)),ucfirst($Cyan->getContainer('application')->getName())];
             $sufix = ucfirst($name);
             $config['layout'] = 'page.'.$name.'.index';
         } else {
-            print_r($name);
-            die('must implement subview');
+            $parse = parse_url($name);
+            $parts = explode(':', $parse['path']);
+
+            $component = array_shift($parts);
+            $name = end($parts);
+            $prefix = [ucfirst(substr($component,4)),ucfirst($Cyan->getContainer('application')->getName())];
+            $sufix = ucfirst($name);
+            $config['layout'] = 'page.'.$name.'.index';
         }
-        $class_name = sprintf('%sView%s',$prefix,$sufix);
+        $class_name = sprintf('%sView%s',implode($prefix),$sufix);
+        if (!class_exists($class_name)) {
+            array_pop($prefix);
+            $class_name = sprintf('%sView%s',implode($prefix),$sufix);
+        }
         $view = $this->getClass($class_name,'CMS\Library\View', $config, function($config) use ($class_name) { return $class_name::getInstance($config); });
 
-        $App = $this->getContainer('application');
         Layout::addIncludePath($view->getBasePath().DIRECTORY_SEPARATOR.'layouts');
-        Layout::addIncludePath($view->getBasePath().DIRECTORY_SEPARATOR.strtolower($App->getName()).DIRECTORY_SEPARATOR.'layouts');
+        Layout::addIncludePath($view->getBasePath().DIRECTORY_SEPARATOR.strtolower($Cyan->getContainer('application')->getName()).DIRECTORY_SEPARATOR.'layouts');
 
         return $view;
     }
