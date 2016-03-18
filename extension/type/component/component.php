@@ -30,6 +30,11 @@ class ExtensionTypeComponent extends \Cyan\Library\ExtensionType
         $this->component = basename($base_path);
         $this->component_name = substr($this->component,4);
 
+        $this->red = Config::getInstance($this->component.'.red');
+        if ($red_path = FilesystemPath::find($base_path,'red.json')) {
+            $this->red->loadFile($red_path);
+        }
+
         $this->registerLanguage();
         $this->registerFiles(['model','view','controller','table'], $base_path);
         $this->registerRoutes();
@@ -54,8 +59,6 @@ class ExtensionTypeComponent extends \Cyan\Library\ExtensionType
         $Cyan = \Cyan::initialize();
 
         foreach ($types as $type) {
-            $class_name_parts = [];
-            $class_name_parts[] = ucfirst($this->component_name);
             $file_path = FilesystemPath::find(self::addIncludePath(), $type.'.php');
             if ($file_path) {
                 $clean_path = str_replace('.'.pathinfo($file_path, PATHINFO_EXTENSION),null,$file_path);
@@ -73,6 +76,28 @@ class ExtensionTypeComponent extends \Cyan\Library\ExtensionType
                     $class_name = implode($class_name_parts);
                     $Cyan->Autoload->registerClass($class_name, $file_path);
                 }
+            }
+
+            if ($this->red->exists($type)) {
+                $this->registerRedClass('controller', $this->red->get($type));
+            }
+            if ($this->red->exists($App->getName().'.'.$type)) {
+                $this->registerRedClass('controller', $this->red->get($App->getName().'.'.$type));
+            }
+        }
+    }
+
+    /**
+     * @param $class_type
+     * @param $classes
+     */
+    private function registerRedClass($class_type, $classes)
+    {
+        $Cyan = \Cyan::initialize();
+
+        foreach ($classes as $class_alias => $class_config) {
+            if (!empty($class_config['extend']) && !class_exists($class_alias,false)) {
+                $Cyan->Autoload->registerClassAlias($class_config['extend'], $class_alias);
             }
         }
     }
@@ -98,29 +123,35 @@ class ExtensionTypeComponent extends \Cyan\Library\ExtensionType
     {
         $App = $this->getContainer('application');
         $route_path = FilesystemPath::find(self::addIncludePath(), 'routes.php');
+        $class_base = $this->component_name;
 
         if ($route_path) {
             $config_routes = require_once $route_path;
-            $class_base = $this->component_name;
+        } elseif(!empty($this->red->get($App->getName().'.routes')) || !empty($this->red->get('routes'))) {
+            $config_routes = $this->red->exists($App->getName().'.routes') ? $this->red->get($App->getName().'.routes') : $this->red->get('routes') ;
+        }
 
-            // check route routes
-            if (isset($config_routes['routes'])) {
-                foreach ($config_routes['routes'] as $route_uri => $route_config) {
-                    $this->assignRoute($route_uri, $route_config, $class_base, $route_path);
-                }
+        if (!isset($config_routes)) {
+            return;
+        }
+
+        // check route routes
+        if (isset($config_routes['routes'])) {
+            foreach ($config_routes['routes'] as $route_uri => $route_config) {
+                $this->assignRoute($route_uri, $route_config, $class_base, $route_path);
             }
+        }
 
-            // check route config
-            if (isset($config_routes['config']) && !empty($config_routes['config'])) {
-                // define default route
-                if (isset($config_routes['config']['default_route'])) {
-                    if (!isset($config_routes['default_route_parameters'])) {
-                        $config_routes['default_route_parameters'] = [];
-                    }
-
-                    // set default route
-                    $App->Router->setDefaultRoute($config_routes['config']['default_route'],$config_routes['default_route_parameters']);
+        // check route config
+        if (isset($config_routes['config']) && !empty($config_routes['config'])) {
+            // define default route
+            if (isset($config_routes['config']['default_route'])) {
+                if (!isset($config_routes['default_route_parameters'])) {
+                    $config_routes['default_route_parameters'] = [];
                 }
+
+                // set default route
+                $App->Router->setDefaultRoute($config_routes['config']['default_route'],$config_routes['default_route_parameters']);
             }
         }
     }

@@ -1,5 +1,6 @@
 <?php
 namespace CMS\Library;
+use Cyan\Library\ViewException;
 
 /**
  * Class View
