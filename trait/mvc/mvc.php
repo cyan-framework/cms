@@ -171,6 +171,20 @@ trait TraitMVC
     }
 
     /**
+     * @param $name
+     *
+     * @return $this
+     *
+     * @since 1.0.0
+     */
+    public function setComponentName($name)
+    {
+        $this->component_name = $name;
+
+        return $this;
+    }
+
+    /**
      * Get Path
      *
      * @return string

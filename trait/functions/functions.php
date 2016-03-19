@@ -24,6 +24,15 @@ trait TraitFunctions
     }
 
     /**
+     * @param $rule
+     * @return bool
+     */
+    public function canAccess($rule)
+    {
+        return !$this->hasContainer('application') ? false : $this->getContainer('application')->getContainer('user')->can($rule) ;
+    }
+
+    /**
      * Translate a text
      *
      * @param $text

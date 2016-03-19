@@ -30,11 +30,6 @@ class ExtensionTypeComponent extends \Cyan\Library\ExtensionType
         $this->component = basename($base_path);
         $this->component_name = substr($this->component,4);
 
-        $this->red = Config::getInstance($this->component.'.red');
-        if ($red_path = FilesystemPath::find($base_path,'red.json')) {
-            $this->red->loadFile($red_path);
-        }
-
         $this->registerLanguage();
         $this->registerFiles(['model','view','controller','table'], $base_path);
         $this->registerRoutes();
@@ -77,28 +72,6 @@ class ExtensionTypeComponent extends \Cyan\Library\ExtensionType
                     $Cyan->Autoload->registerClass($class_name, $file_path);
                 }
             }
-
-            if ($this->red->exists($type)) {
-                $this->registerRedClass('controller', $this->red->get($type));
-            }
-            if ($this->red->exists($App->getName().'.'.$type)) {
-                $this->registerRedClass('controller', $this->red->get($App->getName().'.'.$type));
-            }
-        }
-    }
-
-    /**
-     * @param $class_type
-     * @param $classes
-     */
-    private function registerRedClass($class_type, $classes)
-    {
-        $Cyan = \Cyan::initialize();
-
-        foreach ($classes as $class_alias => $class_config) {
-            if (!empty($class_config['extend']) && !class_exists($class_alias,false)) {
-                $Cyan->Autoload->registerClassAlias($class_config['extend'], $class_alias);
-            }
         }
     }
 
@@ -127,8 +100,6 @@ class ExtensionTypeComponent extends \Cyan\Library\ExtensionType
 
         if ($route_path) {
             $config_routes = require_once $route_path;
-        } elseif(!empty($this->red->get($App->getName().'.routes')) || !empty($this->red->get('routes'))) {
-            $config_routes = $this->red->exists($App->getName().'.routes') ? $this->red->get($App->getName().'.routes') : $this->red->get('routes') ;
         }
 
         if (!isset($config_routes)) {
