@@ -88,7 +88,6 @@ trait TraitMVC
         if (strpos($name,':') === false) {
             $prefix = [ucfirst(substr($this->getComponentName(),4)),ucfirst($Cyan->getContainer('application')->getName())];
             $sufix = ucfirst($name);
-            $config['layout'] = 'page.'.$name.'.index';
         } else {
             $parse = parse_url($name);
             $parts = explode(':', $parse['path']);
@@ -97,8 +96,12 @@ trait TraitMVC
             $name = end($parts);
             $prefix = [ucfirst(substr($component,4)),ucfirst($Cyan->getContainer('application')->getName())];
             $sufix = ucfirst($name);
+        }
+
+        if (!isset($config['layout'])) {
             $config['layout'] = 'page.'.$name.'.index';
         }
+
         $class_name = sprintf('%sView%s',implode($prefix),$sufix);
         if (!class_exists($class_name)) {
             array_pop($prefix);
