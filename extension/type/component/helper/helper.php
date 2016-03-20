@@ -91,6 +91,19 @@ abstract class ExtensionTypeComponentHelper
 
         return $menu;
     }
+
+    public static function getPermissions($extension)
+    {
+        $manifest = self::getManifest($extension);
+
+        $permissions = [];
+
+        foreach ($manifest->xpath('permissions/permission') as $permission_node) {
+            $permissions[$permission_node->getAttribute('name')] = $permission_node->getAttribute('title');
+        }
+
+        return $permissions;
+    }
 }
 
 ExtensionTypeComponentHelper::initialize();

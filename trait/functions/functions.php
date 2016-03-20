@@ -27,7 +27,7 @@ trait TraitFunctions
      * @param $rule
      * @return bool
      */
-    public function canAccess($rule)
+    public function permissionRule($rule)
     {
         return !$this->hasContainer('application') ? false : $this->getContainer('application')->getContainer('user')->can($rule) ;
     }

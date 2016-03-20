@@ -50,6 +50,8 @@ class View extends \Cyan\Library\View
             $this->setLayout($layout);
         }
 
+        $this->set('component', $this->getComponentName());
+
         $Cyan = \Cyan::initialize();
         $this->buffer_content = $this->layout->render();
         $this->trigger('Render', $this);

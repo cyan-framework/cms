@@ -38,7 +38,7 @@ class Layout extends \Cyan\Library\Layout
      * @param array $data
      * @param array $options
      *
-     * @return string
+     * @return self
      *
      * @since 1.0.0
      */

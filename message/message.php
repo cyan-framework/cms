@@ -7,6 +7,11 @@ namespace CMS\Library;
  */
 abstract class Message
 {
+    public static $ERROR = 'error';
+    public static $INFO =  'info';
+    public static $SUCCESS = 'success';
+    public static $WARNING = 'warning';
+
     /**
      * @var array
      */
@@ -24,6 +29,14 @@ abstract class Message
             'class' => 'alert-warning'
         ]
     ];
+
+    /**
+     * @param array $classes
+     */
+    public static function setClasses(array $classes)
+    {
+        self::$classes = $classes;
+    }
 
     /**
      * Enqueue message and redirect
