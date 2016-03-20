@@ -68,10 +68,12 @@ trait TraitMVC
      */
     public function getForm($name, $control_name = null)
     {
+        $Cyan = \Cyan::initialize();
+
         if (strpos($name,':') === false) {
             $form_identifier = sprintf('components:%s.form.%s', $this->getComponentName(), $name);
             $field_identifier = sprintf('components:%s.form.fields', $this->getComponentName());
-            Form::addFieldPath($this->Cyan->Finder->getPath($field_identifier));
+            Form::addFieldPath($Cyan->Finder->getPath($field_identifier));
         } else {
             $form_identifier = $name;
         }
@@ -83,7 +85,6 @@ trait TraitMVC
     public function getView($name, $config = [])
     {
         $Cyan = \Cyan::initialize();
-
         if (strpos($name,':') === false) {
             $prefix = [ucfirst(substr($this->getComponentName(),4)),ucfirst($Cyan->getContainer('application')->getName())];
             $sufix = ucfirst($name);
