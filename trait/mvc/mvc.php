@@ -1,9 +1,9 @@
 <?php
-namespace CMS\Library;
+namespace Cyan\CMS;
 
-use Cyan\Library\Form;
-use Cyan\Library\ReflectionClass;
-use Cyan\Library\TraitException;
+use Cyan\Framework\Form;
+use Cyan\Framework\ReflectionClass;
+use Cyan\Framework\TraitException;
 
 trait TraitMVC
 {
@@ -53,7 +53,7 @@ trait TraitMVC
             array_pop($prefix);
             $class_name = sprintf('%sModel%s',implode($prefix),$sufix);
         }
-        return $this->getClass($class_name,'CMS\Library\Model');
+        return $this->getClass($class_name,'Cyan\CMS\Model');
     }
 
     /**
@@ -107,7 +107,7 @@ trait TraitMVC
             array_pop($prefix);
             $class_name = sprintf('%sView%s',implode($prefix),$sufix);
         }
-        $view = $this->getClass($class_name,'CMS\Library\View', $config, function($config) use ($class_name) { return $class_name::getInstance($config); });
+        $view = $this->getClass($class_name,'Cyan\CMS\View', $config, function($config) use ($class_name) { return $class_name::getInstance($config); });
 
         Layout::addIncludePath($view->getBasePath().DIRECTORY_SEPARATOR.'layouts');
         Layout::addIncludePath($view->getBasePath().DIRECTORY_SEPARATOR.strtolower($Cyan->getContainer('application')->getName()).DIRECTORY_SEPARATOR.'layouts');
@@ -118,10 +118,10 @@ trait TraitMVC
     /**
      * @param string $class_name
      */
-    protected function getClass($class_name,$subclass_of='Cyan\Library\Controller',$arguments = [], \Closure $newInstance = null)
+    protected function getClass($class_name,$subclass_of='Cyan\Framework\Controller',$arguments = [], \Closure $newInstance = null)
     {
         $required_traits = [
-            'Cyan\Library\TraitSingleton'
+            'Cyan\Framework\TraitSingleton'
         ];
 
         $reflection_class = new ReflectionClass($class_name);

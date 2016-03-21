@@ -1,9 +1,9 @@
 <?php
-namespace Cyan\Library;
+namespace Cyan\Framework;
 
-class ExtensionTypePlugin extends \Cyan\Library\ExtensionType
+class ExtensionTypePlugin extends \Cyan\Framework\ExtensionType
 {
-    use \Cyan\Library\TraitSingleton;
+    use \Cyan\Framework\TraitSingleton;
 
     /**
      * Register plugins
@@ -11,7 +11,7 @@ class ExtensionTypePlugin extends \Cyan\Library\ExtensionType
     public function register($path)
     {
         if (!file_exists($path) && !is_dir($path)) {
-            throw new \CMS\Library\ArchitectureException(sprintf('path %s not exists',$path));
+            throw new \Cyan\CMS\ArchitectureException(sprintf('path %s not exists',$path));
         }
 
         $Cyan = \Cyan::initialize();
@@ -36,7 +36,7 @@ class ExtensionTypePlugin extends \Cyan\Library\ExtensionType
                         $name = basename($plugin_path);
 
                         $reflection_class = new ReflectionClass($class_name);
-                        if (!in_array('Cyan\Library\TraitSingleton',$reflection_class->getTraitNames())) {
+                        if (!in_array('Cyan\Framework\TraitSingleton',$reflection_class->getTraitNames())) {
                             throw new FactoryException(sprintf('%s class must use Cyan\Trait\Singleton', $class_name));
                         }
                         unset($reflection_class);

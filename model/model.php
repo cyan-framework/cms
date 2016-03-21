@@ -1,14 +1,14 @@
 <?php
-namespace CMS\Library;
+namespace Cyan\CMS;
 
-use Cyan\Library\ReflectionClass;
-use Cyan\Library\TraitContainer;
-use Cyan\Library\TraitError;
-use Cyan\Library\TraitEvent;
+use Cyan\Framework\ReflectionClass;
+use Cyan\Framework\TraitContainer;
+use Cyan\Framework\TraitError;
+use Cyan\Framework\TraitEvent;
 
 /**
  * Class Model
- * @package CMS\Library
+ * @package Cyan\CMS
  */
 abstract class Model
 {
@@ -119,7 +119,7 @@ abstract class Model
     /**
      * Get Database
      *
-     * @return \Cyan\Library\Database
+     * @return \Cyan\Framework\Database
      *
      * @since 1.0.0
      */

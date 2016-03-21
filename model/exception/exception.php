@@ -1,9 +1,9 @@
 <?php
-namespace CMS\Library;
+namespace Cyan\CMS;
 
 /**
  * Class ModelException
- * @package CMS\Library
+ * @package Cyan\CMS
  */
 class ModelException extends \RuntimeException
 {

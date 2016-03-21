@@ -1,11 +1,11 @@
 <?php
-namespace CMS\Library;
+namespace Cyan\CMS;
 
-use Cyan\Library\TraitSingleton;
+use Cyan\Framework\TraitSingleton;
 
 /**
  * Class Browser
- * @package CMS\Library
+ * @package Cyan\CMS
  *
  * @method Browser getInstance
  */

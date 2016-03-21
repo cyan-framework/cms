@@ -1,9 +1,9 @@
 <?php
-namespace Cyan\Library;
+namespace Cyan\Framework;
 
 /**
  * Class ExtensionTypeComponentHelper
- * @package Cyan\Library
+ * @package Cyan\Framework
  */
 abstract class ExtensionTypeComponentHelper
 {
@@ -42,7 +42,7 @@ abstract class ExtensionTypeComponentHelper
         if (!isset(self::$extension_manifests[$extension])) {
             throw new ExtensionException(sprintf('Extension %s manifest not found!',$extension));
         }
-        return simplexml_load_file(self::$extension_manifests[$extension],'\Cyan\Library\XmlElement');
+        return simplexml_load_file(self::$extension_manifests[$extension],'\Cyan\Framework\XmlElement');
     }
 
     public static function getMenu($extension)

@@ -14,7 +14,8 @@
     }
   ],
   "autoload": {
-    "psr-4": {"CMS\\Library\\": ""}
+    "psr-4": {"Cyan\\CMS\\": ""},
+    "files": ["cms.php"]
   },
   "require": {
     "php": ">= 5.5.0"

@@ -1,9 +1,9 @@
 <?php
-namespace CMS\Library;
+namespace Cyan\CMS;
 
 /**
  * Class Message
- * @package CMS\Library
+ * @package Cyan\CMS
  */
 abstract class Message
 {
@@ -49,8 +49,8 @@ abstract class Message
      */
     public static function enqueueRedirect($App, $type, $message, $redirect_identifier, $redirect_parameters = [])
     {
-        if (!($App instanceof \Cyan\Library\ApplicationWeb)) {
-            throw new \Cyan\Library\ApplicationException('$App must be a instance of Cyan\Library\ApplicationWeb.');
+        if (!($App instanceof \Cyan\Framework\ApplicationWeb)) {
+            throw new \Cyan\Framework\ApplicationException('$App must be a instance of Cyan\Framework\ApplicationWeb.');
         }
         $type = strtolower($type);
         $App->enqueueMessage($App->Text->translate($message),ucfirst($type),self::$classes[$type]);
@@ -66,8 +66,8 @@ abstract class Message
      */
     public static function enqueue($App, $type, $message)
     {
-        if (!($App instanceof \Cyan\Library\ApplicationWeb)) {
-            throw new \Cyan\Library\ApplicationException('$App must be a instance of Cyan\Library\ApplicationWeb.');
+        if (!($App instanceof \Cyan\Framework\ApplicationWeb)) {
+            throw new \Cyan\Framework\ApplicationException('$App must be a instance of Cyan\Framework\ApplicationWeb.');
         }
         $type = strtolower($type);
         $App->enqueueMessage($App->Text->translate($message),ucfirst($type),self::$classes[$type]);

@@ -1,4 +1,4 @@
 <?php
-namespace CMS\Library;
+namespace Cyan\CMS;
 
 class ApplicationException extends \RuntimeException {}

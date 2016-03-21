@@ -1,17 +1,17 @@
 <?php
-namespace CMS\Library;
+namespace Cyan\CMS;
 
-use Cyan\Library\ControllerException;
-use Cyan\Library\Form;
-use Cyan\Library\ReflectionClass;
+use Cyan\Framework\ControllerException;
+use Cyan\Framework\Form;
+use Cyan\Framework\ReflectionClass;
 
-class Controller extends \Cyan\Library\Controller
+class Controller extends \Cyan\Framework\Controller
 {
     use TraitMVC;
 
     /**
      * @param $class_name
-     * @return \Cyan\Library\Controller
+     * @return \Cyan\Framework\Controller
      */
     public function getController($class_name)
     {

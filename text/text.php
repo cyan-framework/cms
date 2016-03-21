@@ -1,11 +1,11 @@
 <?php
-namespace CMS\Library;
+namespace Cyan\CMS;
 
 /**
  * Class String
- * @package CMS\Library
+ * @package Cyan\CMS
  */
-class Text extends \Cyan\Library\Text
+class Text extends \Cyan\Framework\Text
 {
     /**
      *

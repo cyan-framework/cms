@@ -1,14 +1,14 @@
 <?php
-namespace CMS\Library;
+namespace Cyan\CMS;
 
-use Cyan\Library\Config;
-use Cyan\Library\DatabaseTable;
-use Cyan\Library\TraitContainer;
-use Cyan\Library\TraitEvent;
+use Cyan\Framework\Config;
+use Cyan\Framework\DatabaseTable;
+use Cyan\Framework\TraitContainer;
+use Cyan\Framework\TraitEvent;
 
 /**
  * Class Table
- * @package CMS\Library
+ * @package Cyan\CMS
  */
 class Table extends DatabaseTable
 {

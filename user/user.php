@@ -1,18 +1,18 @@
 <?php
-namespace CMS\Library;
-use Cyan\Library\ApplicationWeb;
-use Cyan\Library\Config;
-use Cyan\Library\Database;
-use Cyan\Library\DatabaseTable;
-use Cyan\Library\TraitContainer;
-use Cyan\Library\TraitError;
-use Cyan\Library\TraitEvent;
-use Cyan\Library\TraitPrototype;
-use Cyan\Library\TraitSingleton;
+namespace Cyan\CMS;
+use Cyan\Framework\ApplicationWeb;
+use Cyan\Framework\Config;
+use Cyan\Framework\Database;
+use Cyan\Framework\DatabaseTable;
+use Cyan\Framework\TraitContainer;
+use Cyan\Framework\TraitError;
+use Cyan\Framework\TraitEvent;
+use Cyan\Framework\TraitPrototype;
+use Cyan\Framework\TraitSingleton;
 
 /**
  * Class User
- * @package CMS\Library
+ * @package Cyan\CMS
  */
 class User
 {

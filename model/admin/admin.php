@@ -1,13 +1,13 @@
 <?php
-namespace CMS\Library;
+namespace Cyan\CMS;
 
-use Cyan\Library\TraitContainer;
-use Cyan\Library\TraitError;
-use Cyan\Library\TraitEvent;
+use Cyan\Framework\TraitContainer;
+use Cyan\Framework\TraitError;
+use Cyan\Framework\TraitEvent;
 
 /**
  * Class ModelAdmin
- * @package CMS\Library
+ * @package Cyan\CMS
  */
 class ModelAdmin extends Model
 {

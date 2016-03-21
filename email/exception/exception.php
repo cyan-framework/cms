@@ -1,5 +1,5 @@
 <?php
-namespace CMS\Library;
+namespace Cyan\CMS;
 
 class EmailException extends \RuntimeException
 {

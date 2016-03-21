@@ -1,15 +1,15 @@
 <?php
-namespace CMS\Library;
+namespace Cyan\CMS;
 
-use Cyan\Library\ApplicationWeb;
-use Cyan\Library\Extension;
-use Cyan\Library\ExtensionTypeComponent;
-use Cyan\Library\FactoryPlugin;
-use Cyan\Library\ReflectionClass;
+use Cyan\Framework\ApplicationWeb;
+use Cyan\Framework\Extension;
+use Cyan\Framework\ExtensionTypeComponent;
+use Cyan\Framework\FactoryPlugin;
+use Cyan\Framework\ReflectionClass;
 
 /**
  * Class Application
- * @package CMS\Library
+ * @package Cyan\CMS
  */
 class Application extends ApplicationWeb
 {
@@ -129,14 +129,14 @@ class Application extends ApplicationWeb
      * @param $class_path
      * @param string $instance_of
      */
-    protected function checkClass($class_name, $class_path, $instance_of = 'Cyan\Library\Controller')
+    protected function checkClass($class_name, $class_path, $instance_of = 'Cyan\Framework\Controller')
     {
         if (!class_exists($class_name)) {
             throw new ApplicationException(sprintf('Class "%s" not found in %s',$class_name, $class_path));
         }
 
         $required_traits = [
-            'Cyan\Library\TraitSingleton'
+            'Cyan\Framework\TraitSingleton'
         ];
 
         $reflection_class = new ReflectionClass($class_name);

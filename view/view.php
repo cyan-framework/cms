@@ -1,12 +1,12 @@
 <?php
-namespace CMS\Library;
-use Cyan\Library\ViewException;
+namespace Cyan\CMS;
+use Cyan\Framework\ViewException;
 
 /**
  * Class View
- * @package CMS\Library
+ * @package Cyan\CMS
  */
-class View extends \Cyan\Library\View
+class View extends \Cyan\Framework\View
 {
     use TraitMVC;
 

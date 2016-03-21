@@ -1,9 +1,9 @@
 <?php
-namespace CMS\Library;
+namespace Cyan\CMS;
 
 /**
  * Class HTTP
- * @package CMS\Library
+ * @package Cyan\CMS
  */
 abstract class HTTP
 {

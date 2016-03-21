@@ -1,9 +1,9 @@
 <?php
-namespace CMS\Library;
+namespace Cyan\CMS;
 
-use Cyan\Library\FilesystemPath;
+use Cyan\Framework\FilesystemPath;
 
-class Layout extends \Cyan\Library\Layout
+class Layout extends \Cyan\Framework\Layout
 {
     use TraitFunctions;
 

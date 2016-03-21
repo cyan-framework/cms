@@ -1,11 +1,11 @@
 <?php
-namespace Cyan\Library;
+namespace Cyan\Framework;
 
 require_once 'helper' . DIRECTORY_SEPARATOR . 'helper.php';
 
 class ExtensionTypeApplication extends ExtensionType
 {
-    use \Cyan\Library\TraitSingleton;
+    use \Cyan\Framework\TraitSingleton;
 
     public function register()
     {

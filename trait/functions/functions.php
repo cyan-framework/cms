@@ -1,5 +1,5 @@
 <?php
-namespace CMS\Library;
+namespace Cyan\CMS;
 
 trait TraitFunctions
 {
