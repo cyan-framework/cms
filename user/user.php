@@ -26,6 +26,13 @@ class User
     protected $lang_id = null;
 
     /**
+     * Default group id
+     *
+     * @var int
+     */
+    protected $default_group_id = 1;
+
+    /**
      * User constructor.
      */
     public function __construct()
@@ -208,6 +215,8 @@ class User
      * User username
      *
      * @return string
+     *
+     * @since 1.0.0
      */
     public function getUsername()
     {
@@ -218,6 +227,8 @@ class User
      * User Current Usergroup
      *
      * @return string
+     *
+     * @since 1.0.0
      */
     public function getUsergroup()
     {
@@ -228,9 +239,23 @@ class User
         $table = $this->getContainer('table_user')->getConfig();
 
         /** @var DatabaseTable $userInfo */
-        $userInfo = $Dbo->table($table['table_name'])->where($table['table_key'].' = ?')->parameters([$this->getID()]);
+        $user_usergroups = $Dbo->table('user_usergroup')->select('user_group_id')->where('user_id = ?')->parameters([$this->getID()])->fetchAll(\PDO::FETCH_COLUMN);
+        return empty($user_usergroups) ? [1] : $user_usergroups;
+    }
 
-        return !empty($userInfo) ? 1 : $userInfo->user_group_id;
+
+    /**
+     * @param $default_group_id
+     *
+     * @return $this
+     *
+     * @since 1.0.0
+     */
+    public function setDefaultGroup($default_group_id)
+    {
+        $this->default_group_id = $default_group_id;
+
+        return $this;
     }
 
     /**
@@ -262,14 +287,18 @@ class User
         $App = $this->getContainer('application');
         $Dbo = $App->Database->connect();
 
-        $Dbo->schema()->setBackReference('extension','user_group_rules','id');
-        $Dbo->schema()->setBackReference('extension_action','user_group_rules','id');
+        $Dbo->schema()->setBackReference('extension','rules','id');
+        $Dbo->schema()->setBackReference('extension_action','rules','id');
 
-        $rows = $Dbo->table('user_group_rules')
+        $in_groups = implode(',',$this->getUsergroup());
+        $sql = $Dbo->getDatabaseQuery()->from('rules')
             ->select('extension.name AS extension_name')
             ->select('extension_action.name AS action_name')
-            ->where('user_group_id = ?')
-            ->parameters([$this->getUsergroup()])->fetchAll();
+            ->where('usergroup_id IN ('.$in_groups.')');
+
+        $sth = $Dbo->prepare($sql);
+        $sth->execute();
+        $rows = $sth->fetchAll(\PDO::FETCH_ASSOC);
 
         $acl = [];
         foreach ($rows as $row) {
