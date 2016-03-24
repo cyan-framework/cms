@@ -1,6 +1,7 @@
 <?php
 namespace Cyan\CMS;
 
+use Cyan\Framework\Inflector;
 use Cyan\Framework\ReflectionClass;
 use Cyan\Framework\TraitContainer;
 use Cyan\Framework\TraitError;
@@ -12,7 +13,7 @@ use Cyan\Framework\TraitEvent;
  */
 abstract class Model
 {
-    use TraitContainer, TraitEvent, TraitError;
+    use TraitComponent, TraitClass, TraitTable, TraitForm, TraitModel, TraitContainer, TraitEvent, TraitError;
 
     /**
      * Model name
@@ -54,7 +55,7 @@ abstract class Model
     }
 
     /**
-     * Model Name
+     * Return name
      *
      * @return string
      *
@@ -63,57 +64,23 @@ abstract class Model
     public function getName()
     {
         if (empty($this->name)) {
-            $reflection_class = new ReflectionClass($this);
-            $this->name = $reflection_class->getShortName();
+            $reflection = new ReflectionClass(__CLASS__);
+            $self_class_name = strtolower($reflection->getShortName());
+
+            $class_parts = explode('_', Inflector::underscore(get_called_class()));
+            $class_name = implode(array_slice($class_parts, array_search($self_class_name,$class_parts) + 1));
+
+            if (empty($class_name)) {
+                $remove_parts = [];
+                $remove_parts[] = $self_class_name;
+                $remove_parts[] = strtolower($this->getContainer('application')->getName());
+                $class_name = implode(array_unique(array_diff($class_parts, $remove_parts)));
+            }
+
+            $this->name = $class_name;
         }
 
         return $this->name;
-    }
-
-    /**
-     * @return string
-     */
-    public function getTableName()
-    {
-        if (empty($this->table_name)) {
-            $parts = preg_split('/(?=[A-Z])/',$this->getName(), -1, PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE);
-            $this->table_name = strtolower(end($parts));
-        }
-
-        return $this->table_name;
-    }
-
-    /**
-     * @param $name
-     * @return null
-     */
-    public function getTablePrimaryKey($name = null)
-    {
-        if (is_null($name)) {
-            $name = $this->getTableName();
-        }
-        $table_config = $this->getTableConfig($name);
-
-        return isset($table_config['table_key']) ? $table_config['table_key'] : null ;
-    }
-
-    /**
-     * @param $name
-     *
-     * @return array
-     */
-    public function getTableConfig($name)
-    {
-        if (strpos($name,':') === false) {
-            $App = $this->getContainer('application');
-            $parts = preg_split('/(?=[A-Z])/',$this->getName(), -1, PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE);
-            $component_folder = sprintf('com_%s', strtolower($parts[0]));
-            $table_config_identifier = sprintf('components:%s.config.table.%s',$component_folder,$name);
-        } else {
-            $table_config_identifier = $name;
-        }
-
-        return $this->Cyan->Finder->getIdentifier($table_config_identifier, []);
     }
 
     /**
