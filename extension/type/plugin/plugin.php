@@ -11,11 +11,11 @@ class ExtensionTypePlugin extends \Cyan\Framework\ExtensionType
     public function register($path)
     {
         if (!file_exists($path) && !is_dir($path)) {
-            throw new \Cyan\CMS\ArchitectureException(sprintf('path %s not exists',$path));
+            throw new ExtensionException(sprintf('path %s not exists',$path));
         }
 
         $Cyan = \Cyan::initialize();
-        $App = $this->getContainer('application');
+        $App = $Cyan->getContainer('application');
         $plugin_manager = $App->getContainer('factory_plugin');
 
         $plugin_types = glob($path.'/*', GLOB_ONLYDIR);

@@ -7,9 +7,13 @@ class ExtensionTypeApplication extends ExtensionType
 {
     use \Cyan\Framework\TraitSingleton;
 
-    public function register()
+    public function register($base_path)
     {
-
+        if (!file_exists($base_path) && !is_dir($base_path)) {
+            throw new ExtensionException(sprintf('path %s not exists',$base_path));
+        }
+        
+        
     }
 }
 

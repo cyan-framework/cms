@@ -230,7 +230,7 @@ class User
      *
      * @since 1.0.0
      */
-    public function getUsergroup()
+    public function getRoles()
     {
         /** @var ApplicationWeb $App */
         $App = $this->getContainer('application');
@@ -239,7 +239,7 @@ class User
         $table = $this->getContainer('table_user')->getConfig();
 
         /** @var DatabaseTable $userInfo */
-        $user_usergroups = $Dbo->table('user_usergroup')->select('user_group_id')->where('user_id = ?')->parameters([$this->getID()])->fetchAll(\PDO::FETCH_COLUMN);
+        $user_usergroups = $Dbo->table('user_role')->select('role_id')->where('user_id = ?')->parameters([$this->getID()])->fetchAll(\PDO::FETCH_COLUMN);
         return empty($user_usergroups) ? [1] : $user_usergroups;
     }
 
@@ -287,14 +287,14 @@ class User
         $App = $this->getContainer('application');
         $Dbo = $App->Database->connect();
 
-        $Dbo->schema()->setBackReference('extension','rules','id');
-        $Dbo->schema()->setBackReference('extension_action','rules','id');
+        $Dbo->schema()->setBackReference('extension','rule','id');
+        $Dbo->schema()->setBackReference('extension_action','rule','id');
 
-        $in_groups = implode(',',$this->getUsergroup());
-        $sql = $Dbo->getDatabaseQuery()->from('rules')
+        $in_groups = implode(',',$this->getRoles());
+        $sql = $Dbo->getDatabaseQuery()->from('rule')
             ->select('extension.name AS extension_name')
             ->select('extension_action.name AS action_name')
-            ->where('usergroup_id IN ('.$in_groups.')');
+            ->where('role_id IN ('.$in_groups.')');
 
         $sth = $Dbo->prepare($sql);
         $sth->execute();

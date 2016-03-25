@@ -1,6 +1,8 @@
 <?php
 namespace Cyan\CMS;
 
+use Cyan\Framework\Form;
+
 trait TraitForm
 {
     /**
