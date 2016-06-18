@@ -28,7 +28,7 @@ class ExtensionTypeComponent extends \Cyan\Framework\ExtensionType
         }
 
         $this->component = basename($base_path);
-        $this->component_name = substr($this->component,4);
+        $this->component_name = $this->component;
 
         $this->registerLanguage();
         $this->registerFiles(['model','view','controller','table'], $base_path);
