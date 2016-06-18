@@ -55,13 +55,16 @@ class Application extends ApplicationWeb
 
         $app_config = $this->getConfig();
 
-        $database_enviroment = isset($app_config['database_environment']) ? $app_config['database_environment'] : 'development' ;
-        $database_enviroment_identifier = sprintf('config:database.%s.%s',$this->name,$database_enviroment);
-        $database_config = $this->Cyan->Finder->getIdentifier($database_enviroment_identifier,[]);
+        $database_environment = isset($app_config['database_environment']) ? $app_config['database_environment'] : 'local' ;
+        $database_environment_identifier = sprintf('config:database.%s.%s',$this->getName(),$database_environment);
+        $database_config = $this->Cyan->Finder->getIdentifier($database_environment_identifier, [], []);
+        if (empty($database_config)) {
+            $database_config = $this->Cyan->Finder->getIdentifier(sprintf('config:database.default.%s',$database_environment), [], []);
+        }
         if (!empty($database_config)) {
             $this->Database->setConfig($database_config->toArray())->connect();
         } else {
-            throw new ApplicationException(sprintf('Database Enviroment "%s" not found in path %s',$database_enviroment,$this->Cyan->Finder->getPath($database_enviroment_identifier)));
+            throw new ApplicationException(sprintf('Database Environment "%s" not found in path %s',$database_environment,$this->Cyan->Finder->getPath($database_environment_identifier)));
         }
 
         Extension::addIncludePath($this->Cyan->Finder->getPath('vendor:cms.extension.type'));
