@@ -1,0 +1,23 @@
+{
+  "name": "cyan-framework/cms",
+  "type": "library",
+  "license": "GPLv3",
+  "description": "Cyan CMS Framework",
+  "keywords": ["cyan cms framework"],
+  "homepage": "https://github.com/cyan-framerok/cms",
+  "version": "0.1",
+  "authors": [
+    {
+      "name": "Julio Pontes",
+      "email": "juliopfneto@gmail.com",
+      "homepage": ""
+    }
+  ],
+  "autoload": {
+    "psr-4": {"Cyan\\CMS\\": ""},
+    "files": ["cms.php"]
+  },
+  "require": {
+    "php": ">= 5.5.0"
+  }
+}
