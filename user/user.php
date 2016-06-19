@@ -26,11 +26,11 @@ class User
     protected $lang_id = null;
 
     /**
-     * Default group id
+     * Default role id
      *
      * @var int
      */
-    protected $default_group_id = 1;
+    protected $default_role_id = 1;
 
     /**
      * User constructor.
@@ -51,7 +51,7 @@ class User
             /** @var ApplicationWeb $App */
             $App = $this->getContainer('application');
             $Dbo = $App->Database->connect();
-            $table = $this->Cyan->Finder->getIdentifier('components.com_users.config.table.profile');
+            $table = $this->getContainer('table_profile')->getConfig();
 
             $userProfile = $Dbo->table($table['table_name'])->where('user_id', $this->getID())->fetch();
             if (empty($userProfile)) {
@@ -182,7 +182,10 @@ class User
      * Confirm current password is still valid
      *
      * @param $password
+     * 
      * @return bool
+     * 
+     * 
      */
     public function sudo($password)
     {
@@ -224,7 +227,7 @@ class User
     }
 
     /**
-     * User Current Usergroup
+     * User Roles
      *
      * @return string
      *
@@ -236,24 +239,23 @@ class User
         $App = $this->getContainer('application');
         $Dbo = $App->Database->connect();
 
-        $table = $this->getContainer('table_user')->getConfig();
+        $table = $this->getContainer('table_role')->getConfig();
 
         /** @var DatabaseTable $userInfo */
-        $user_usergroups = $Dbo->table('user_role')->select('role_id')->where('user_id = ?')->parameters([$this->getID()])->fetchAll(\PDO::FETCH_COLUMN);
-        return empty($user_usergroups) ? [1] : $user_usergroups;
+        $user_roles = $Dbo->table('user_role')->select('role_id')->where('user_id = ?')->parameters([$this->getID()])->fetchAll(\PDO::FETCH_COLUMN);
+        return empty($user_roles) ? [$this->default_role_id] : $user_roles;
     }
 
-
     /**
-     * @param $default_group_id
+     * @param $default_role_id
      *
      * @return $this
      *
      * @since 1.0.0
      */
-    public function setDefaultGroup($default_group_id)
+    public function setDefaultRole($default_role_id)
     {
-        $this->default_group_id = $default_group_id;
+        $this->default_role_id = $default_role_id;
 
         return $this;
     }
@@ -262,6 +264,11 @@ class User
      * Check if user can do a action base on plan
      *
      * @param $identifier
+     * @param $default
+     *
+     * @return mixed
+     *
+     * @since 1.0.0
      */
     public function can($identifier, $default = false)
     {
@@ -292,9 +299,11 @@ class User
 
         $in_groups = implode(',',$this->getRoles());
         $sql = $Dbo->getDatabaseQuery()->from('rule')
+            ->select('access')
             ->select('extension.name AS extension_name')
             ->select('extension_action.name AS action_name')
-            ->where('role_id IN ('.$in_groups.')');
+            ->where('role_id IN ('.$in_groups.')')
+            ->where('app_instance_id = '.$App->getID());
 
         $sth = $Dbo->prepare($sql);
         $sth->execute();
@@ -302,14 +311,13 @@ class User
 
         $acl = [];
         foreach ($rows as $row) {
-            $acl[$row['extension_name']][$row['action_name']] = true;
+            $acl[$row['extension_name']][$row['action_name']] = $row['access'];
         }
 
         $configAcl = new Config();
         $configAcl->loadArray($acl);
         return $configAcl;
     }
-
 
     /**
      * Check Brute Force verification
@@ -326,7 +334,7 @@ class User
         $two_hours_ago = date("Y-m-d h:i:s",strtotime('-2 hours'));
         $Dbo = $App->Database->connect();
 
-        $sql = $Dbo->getDatabaseQuery()->from('login_attempt')->where('user_id = ?')->andWhere('time >= ?')->andWhere('time <= ?')->parameters([$user_id,$two_hours_ago,$now]);
+        $sql = $Dbo->getDatabaseQuery()->from('user_login_attempt')->where('user_id = ?')->andWhere('time >= ?')->andWhere('time <= ?')->parameters([$user_id,$two_hours_ago,$now]);
 
         $sth = $Dbo->prepare($sql->getQuery());
         $sth->execute($sql->getParameters());

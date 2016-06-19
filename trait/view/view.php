@@ -14,7 +14,7 @@ trait TraitView
             $parts = explode(':', $parse['path']);
 
             $component = array_shift($parts);
-            $name = end($parts);
+            $name = empty($parts) ? $component : end($parts);
             $prefix = [ucfirst($component),ucfirst($Cyan->getContainer('application')->getName())];
             $sufix = ucfirst($name);
         }
