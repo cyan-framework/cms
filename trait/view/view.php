@@ -28,7 +28,7 @@ trait TraitView
             array_pop($prefix);
             $class_name = sprintf('%sView%s',implode($prefix),$sufix);
         }
-        $view = $this->getClass($class_name,'Cyan\CMS\View', $config, function($config) use ($class_name) { return $class_name::getInstance($config); });
+        $view = $this->getClass($class_name,'Cyan\CMS\View', [$config], function($config) use ($class_name) { return new $class_name($config); });
 
         Layout::addIncludePath($view->getBasePath().DIRECTORY_SEPARATOR.'layouts');
         Layout::addIncludePath($view->getBasePath().DIRECTORY_SEPARATOR.strtolower($Cyan->getContainer('application')->getName()).DIRECTORY_SEPARATOR.'layouts');

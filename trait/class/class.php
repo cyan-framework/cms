@@ -9,7 +9,7 @@ trait TraitClass
     /**
      * @param string $class_name
      */
-    protected function getClass($class_name,$subclass_of='Cyan\Framework\Controller',$arguments = [], \Closure $newInstance = null)
+    protected function getClass($class_name,$subclass_of='Cyan\Framework\Controller',array $arguments = [], \Closure $newInstance = null)
     {
         $required_traits = [
             'Cyan\Framework\TraitSingleton'
@@ -27,7 +27,7 @@ trait TraitClass
         }
 
         if (is_callable($newInstance)) {
-            $instance = $newInstance($arguments);
+            $instance = call_user_func_array($newInstance, $arguments);
         } else {
             $instance = !empty($arguments) ? call_user_func_array([$class_name,'getInstance'],$arguments) : $class_name::getInstance();
         }

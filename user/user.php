@@ -295,13 +295,13 @@ class User
         $Dbo = $App->Database->connect();
 
         $Dbo->schema()->setBackReference('extension','rule','id');
-        $Dbo->schema()->setBackReference('extension_action','rule','id');
+        $Dbo->schema()->setBackReference('rule_action','rule','id');
 
         $in_groups = implode(',',$this->getRoles());
         $sql = $Dbo->getDatabaseQuery()->from('rule')
             ->select('access')
             ->select('extension.name AS extension_name')
-            ->select('extension_action.name AS action_name')
+            ->select('rule_action.name AS action_name')
             ->where('role_id IN ('.$in_groups.')')
             ->where('app_instance_id = '.$App->getID());
 

@@ -66,4 +66,18 @@ class Table extends DatabaseTable
         $factory_plugin = $this->Cyan->getContainer('application')->getContainer('factory_plugin');
         $factory_plugin->assign('table', $this);
     }
+
+    /**
+     * Load by ID
+     *
+     * @param $id
+     * @return $this
+     */
+    public function load($id)
+    {
+        $this->query->where($this->table_key.' = ?');
+        $this->query->parameters([$id]);
+
+        return $this;
+    }
 }
