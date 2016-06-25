@@ -17,4 +17,12 @@ trait TraitModelItem
 
         return $table->fetch();
     }
+
+    /**
+     * @param array $data
+     */
+    public function save(array $data)
+    {
+        return $this->getTable($this->getName())->save($data);
+    }
 }

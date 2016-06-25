@@ -80,4 +80,39 @@ class Table extends DatabaseTable
 
         return $this;
     }
+
+    protected function check()
+    {
+        return true;
+    }
+
+    /**
+     * @param array $data
+     * @return bool
+     */
+    public function save(array $data)
+    {
+        $query = $this->db->getDatabaseQuery();
+
+        if (isset($data[$this->table_key]) && intval($data[$this->table_key])) {
+            $key_value = $data[$this->table_key];
+            unset($data[$this->table_key]);
+            $sql = $query->update($this->getTable());
+            $sql->where($this->table_key.' = '.$key_value);
+            foreach ($data as $field => $value) {
+                $sql->set($field.' = ?');
+            }
+            $sql->parameters(array_values($data));
+        } else {
+            $sql = $query->insert($this->getTable());
+            unset($data[$this->table_key]);
+            foreach ($data as $field => $value) {
+                $sql->columns($field);
+            }
+            $sql->values($data);
+        }
+
+        $sth = $this->db->prepare($sql);
+        return $sth->execute($sql->getParameters());
+    }
 }

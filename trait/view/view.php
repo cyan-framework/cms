@@ -29,6 +29,12 @@ trait TraitView
             $class_name = sprintf('%sView%s',implode($prefix),$sufix);
         }
         $view = $this->getClass($class_name,'Cyan\CMS\View', [$config], function($config) use ($class_name) { return new $class_name($config); });
+        if (!$view->getLayout()->hasContainer('application')) {
+            $view->getLayout()->setContainer('application', $view->getContainer('application'));
+            if (!$view->getLayout()->hasContainer('factory_plugin')) {
+                $view->getLayout()->setContainer('factory_plugin', $this->getContainer('application')->getContainer('factory_plugin'));
+            }
+        }
 
         Layout::addIncludePath($view->getBasePath().DIRECTORY_SEPARATOR.'layouts');
         Layout::addIncludePath($view->getBasePath().DIRECTORY_SEPARATOR.strtolower($Cyan->getContainer('application')->getName()).DIRECTORY_SEPARATOR.'layouts');

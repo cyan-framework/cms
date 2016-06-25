@@ -32,11 +32,13 @@ trait TraitClass
             $instance = !empty($arguments) ? call_user_func_array([$class_name,'getInstance'],$arguments) : $class_name::getInstance();
         }
 
-        if (!$instance->hasContainer('application')) {
-            $instance->setContainer('application', $this->getContainer('application'));
-        }
-        if (!$instance->hasContainer('factory_plugin')) {
-            $instance->setContainer('factory_plugin', $this->getContainer('application')->getContainer('factory_plugin'));
+        if ($this->hasContainer('application')) {
+            if (!$instance->hasContainer('application')) {
+                $instance->setContainer('application', $this->getContainer('application'));
+            }
+            if (!$instance->hasContainer('factory_plugin')) {
+                $instance->setContainer('factory_plugin', $this->getContainer('application')->getContainer('factory_plugin'));
+            }
         }
         if (is_callable([$instance,'initialize'])) {
             $instance->initialize();
