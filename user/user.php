@@ -303,7 +303,7 @@ class User
             ->select('extension.name AS extension_name')
             ->select('rule_action.name AS action_name')
             ->where('role_id IN ('.$in_groups.')')
-            ->where('app_instance_id = '.$App->getID());
+            ->where('application_instance_id = '.$App->getID());
 
         $sth = $Dbo->prepare($sql);
         $sth->execute();

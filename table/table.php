@@ -81,11 +81,6 @@ class Table extends DatabaseTable
         return $this;
     }
 
-    protected function check()
-    {
-        return true;
-    }
-
     /**
      * @param array $data
      * @return bool
@@ -93,6 +88,11 @@ class Table extends DatabaseTable
     public function save(array $data)
     {
         $query = $this->db->getDatabaseQuery();
+
+        $is_new = false;
+
+        $this->onBeforeSaveHook($data);
+        $this->trigger('BeforeSave', $this, $data);
 
         if (isset($data[$this->table_key]) && intval($data[$this->table_key])) {
             $key_value = $data[$this->table_key];
@@ -104,6 +104,7 @@ class Table extends DatabaseTable
             }
             $sql->parameters(array_values($data));
         } else {
+            $is_new = true;
             $sql = $query->insert($this->getTable());
             unset($data[$this->table_key]);
             foreach ($data as $field => $value) {
@@ -113,6 +114,29 @@ class Table extends DatabaseTable
         }
 
         $sth = $this->db->prepare($sql);
-        return $sth->execute($sql->getParameters());
+        $return = $sth->execute($sql->getParameters());
+        if ($is_new) $data[$this->table_key] = $sth->lastInsertId();
+
+        $this->trigger('AfterSave', $this, $data, $is_new, $data[$this->table_key]);
+
+        $this->onAfterSaveHook($data, $is_new, $data[$this->table_key]);
+
+        return $return;
+    }
+
+    /**
+     * @param $data
+     */
+    protected function onBeforeSaveHook(&$data)
+    {
+
+    }
+
+    /**
+     * @param $data
+     */
+    protected function onAfterSaveHook($data, $is_new, $insert_id)
+    {
+
     }
 }
