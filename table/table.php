@@ -103,6 +103,7 @@ class Table extends DatabaseTable
                 $sql->set($field.' = ?');
             }
             $sql->parameters(array_values($data));
+            $data[$this->table_key] = $key_value;
         } else {
             $is_new = true;
             $sql = $query->insert($this->getTable());
@@ -113,9 +114,9 @@ class Table extends DatabaseTable
             $sql->values($data);
         }
 
-        $sth = $this->db->prepare($sql);
-        $return = $sth->execute($sql->getParameters());
-        if ($is_new) $data[$this->table_key] = $sth->lastInsertId();
+        $pdo = $this->db->prepare($sql);
+        $return = $pdo->execute($sql->getParameters());
+        if ($is_new) $data[$this->table_key] = $this->db->getPdo('write')->lastInsertId();
 
         $this->trigger('AfterSave', $this, $data, $is_new, $data[$this->table_key]);
 

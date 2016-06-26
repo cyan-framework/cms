@@ -14,8 +14,19 @@ trait TraitModelItem
         $name = Inflector::isSingular($this->getName()) ? $this->getName() : Inflector::singularize($this->getName()) ;
         $table = $this->getTable($name);
         $table->load($id);
+        $item = $table->fetch();
 
-        return $table->fetch();
+        $this->onAfterLoadHook($item);
+
+        return $item;
+    }
+
+    /**
+     * @param $item
+     */
+    protected function onAfterLoadHook(&$item)
+    {
+        
     }
 
     /**
