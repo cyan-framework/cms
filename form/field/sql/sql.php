@@ -53,9 +53,6 @@ class FormFieldSql extends FormFieldSelect
         $Dbo = $App->Database->connect();
 
         $query = $Dbo->getDatabaseQuery()->from($table_name)->select(implode(',',array_filter($fields)));
-        if (!empty($id)) {
-            $query->where($option_value.' = ?')->parameters([$id]);
-        }
 
         $sth = $Dbo->prepare($query);
         $sth->execute($query->getParameters());

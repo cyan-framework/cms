@@ -241,7 +241,7 @@ class User
         $table = $this->getContainer('table_role')->getConfig();
 
         /** @var DatabaseTable $userInfo */
-        $user_roles = $Dbo->table('user_role')->select('role_id')->where('user_id = ?')->parameters([$this->getID()])->fetchAll(\PDO::FETCH_COLUMN);
+        $user_roles = $Dbo->table('user_role')->select('role_id')->leftJoin('role','role.id = user_role.role_id')->where('state_id = 1')->where('user_id = ?')->parameters([$this->getID()])->fetchAll(\PDO::FETCH_COLUMN);
         return empty($user_roles) ? [$this->default_role_id] : $user_roles;
     }
 

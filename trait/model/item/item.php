@@ -21,6 +21,18 @@ trait TraitModelItem
         return $item;
     }
 
+    public function changeState($id,$state_id)
+    {
+        $name = Inflector::isSingular($this->getName()) ? $this->getName() : Inflector::singularize($this->getName()) ;
+        $table_config = $this->getTable($name)->getConfig();
+
+        $query = $this->getDbo()->getDatabaseQuery()->update($table_config['table_name'])->set('state_id = ?')->where($table_config['table_key'].' IN '.sprintf('(%s)',implode(',',$id)))->parameters([$state_id]);
+        $sth = $this->getDbo()->prepare($query);
+        $sth->execute($query->getParameters());
+
+        return true;
+    }
+
     /**
      * @param $item
      */
