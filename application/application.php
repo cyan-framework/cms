@@ -56,7 +56,7 @@ class Application extends ApplicationWeb
         $app_config = $this->getConfig();
 
         $database_environment = isset($app_config['database_environment']) ? $app_config['database_environment'] : 'local' ;
-        $database_environment_identifier = sprintf('config:database.%s.%s',$this->getName(),$database_environment);
+        $database_environment_identifier = sprintf('config:application.%s.database.%s',$this->getName(),$database_environment);
         $database_config = $this->Cyan->Finder->getIdentifier($database_environment_identifier, [], []);
         if (empty($database_config)) {
             $database_config = $this->Cyan->Finder->getIdentifier(sprintf('config:database.default.%s',$database_environment), [], []);
