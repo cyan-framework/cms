@@ -28,6 +28,16 @@ class Application extends ApplicationWeb
     protected $route_path;
 
     /**
+     * Initialize resources configuration
+     *
+     * @var bool
+     */
+    protected $initializeResourcesConfig = [
+        'database' => true,
+        'user' => true
+    ];
+
+    /**
      * Initialize Application
      */
     public function initialize()
@@ -55,16 +65,18 @@ class Application extends ApplicationWeb
 
         $app_config = $this->getConfig();
 
-        $database_environment = isset($app_config['database_environment']) ? $app_config['database_environment'] : 'local' ;
-        $database_environment_identifier = sprintf('config:application.%s.database.%s',$this->getName(),$database_environment);
-        $database_config = $this->Cyan->Finder->getIdentifier($database_environment_identifier, [], []);
-        if (empty($database_config)) {
-            $database_config = $this->Cyan->Finder->getIdentifier(sprintf('config:database.default.%s',$database_environment), [], []);
-        }
-        if (!empty($database_config)) {
-            $this->Database->setConfig($database_config->toArray())->connect();
-        } else {
-            throw new ApplicationException(sprintf('Database Environment "%s" not found in path %s',$database_environment,$this->Cyan->Finder->getPath($database_environment_identifier)));
+        if ($this->canInitializeResource('database')) {
+            $database_environment = isset($app_config['database_environment']) ? $app_config['database_environment'] : 'local' ;
+            $database_environment_identifier = sprintf('config:application.%s.database.%s',$this->getName(),$database_environment);
+            $database_config = $this->Cyan->Finder->getIdentifier($database_environment_identifier, [], []);
+            if (empty($database_config)) {
+                $database_config = $this->Cyan->Finder->getIdentifier(sprintf('config:database.default.%s',$database_environment), [], []);
+            }
+            if (!empty($database_config)) {
+                $this->Database->setConfig($database_config->toArray())->connect();
+            } else {
+                throw new ApplicationException(sprintf('Database Environment "%s" not found in path %s',$database_environment,$this->Cyan->Finder->getPath($database_environment_identifier)));
+            }
         }
 
         Extension::addIncludePath($this->Cyan->Finder->getPath('vendor:cms.extension.type'));
@@ -83,7 +95,34 @@ class Application extends ApplicationWeb
         // load component structure
         $this->loadComponents($this->Cyan->Finder->getResource('components'));
 
-        return parent::initialize();
+        parent::initialize();
+    }
+
+    /**
+     * Check if can initialize a application resource
+     * 
+     * @param $name
+     * 
+     * @return bool
+     */
+    public function canInitializeResource($name)
+    {
+        return isset($this->initializeResourcesConfig[$name]) ? $this->initializeResourcesConfig[$name] : false ;
+    }
+
+    /**
+     * @param $name
+     * @param bool $value
+     * @param bool $override
+     * @return $this
+     */
+    public function setInitializeResource($name, $value = true, $override = false)
+    {
+        if (isset($this->initializeResourcesConfig[$name]) && $override || !isset($this->initializeResourcesConfig[$name])) {
+            $this->initializeResourcesConfig[$name] = $value;
+        }
+
+        return $this;
     }
 
     /**

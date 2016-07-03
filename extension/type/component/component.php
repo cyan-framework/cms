@@ -33,6 +33,7 @@ class ExtensionTypeComponent extends \Cyan\Framework\ExtensionType
         $this->registerLanguage();
         $this->registerFiles(['model','view','controller','table'], $base_path);
         $this->registerRoutes();
+        $this->includeInitialize();
 
         if ($this->base_path == $base_path) {
             $pluginArchitecture = Extension::get('plugin');
@@ -46,7 +47,8 @@ class ExtensionTypeComponent extends \Cyan\Framework\ExtensionType
     }
 
     /**
-     * @param array $files
+     * @param array $types
+     * @param $base_path
      */
     public function registerFiles(array $types, $base_path)
     {
@@ -86,6 +88,18 @@ class ExtensionTypeComponent extends \Cyan\Framework\ExtensionType
             if (!$App->Text->loadLanguageIdentifier('components:'.$this->component.'.'.$App->getName().'.language.'.$app_language.'.'.$this->component)) {
                 $App->Text->loadLanguageIdentifier('components:'.$this->component.'.language.'.$app_language.'.'.$this->component);
             }
+        }
+    }
+
+    /**
+     * Include initialize if exists
+     */
+    private function includeInitialize()
+    {
+        $App = $this->getContainer('application');
+        $initialize_path = FilesystemPath::find(self::addIncludePath(), 'initialize.php');
+        if ($initialize_path) {
+            require_once $initialize_path;
         }
     }
 
