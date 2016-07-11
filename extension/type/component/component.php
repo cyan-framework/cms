@@ -46,11 +46,20 @@ class ExtensionTypeComponent extends \Cyan\Framework\ExtensionType
         }
     }
 
+    public function discover($base_path)
+    {
+        if (!file_exists($base_path) && !is_dir($base_path)) {
+            throw new ExtensionException(sprintf('path %s not exists',$base_path));
+        }
+
+        
+    }
+
     /**
      * @param array $types
      * @param $base_path
      */
-    public function registerFiles(array $types, $base_path)
+    private function registerFiles(array $types, $base_path)
     {
         $App = $this->getContainer('application');
         $Cyan = \Cyan::initialize();
@@ -97,9 +106,17 @@ class ExtensionTypeComponent extends \Cyan\Framework\ExtensionType
     private function includeInitialize()
     {
         $App = $this->getContainer('application');
-        $initialize_path = FilesystemPath::find(self::addIncludePath(), 'initialize.php');
-        if ($initialize_path) {
-            require_once $initialize_path;
+
+        foreach (['initialize','schema'] as $file) {
+            $initialize_path = FilesystemPath::find(self::addIncludePath(), $App->getName() . DIRECTORY_SEPARATOR . $file . '.php');
+            if ($initialize_path) {
+                require_once $initialize_path;
+            } else {
+                $initialize_path = FilesystemPath::find(self::addIncludePath(), $file . '.php');
+                if ($initialize_path) {
+                    require_once $initialize_path;
+                }
+            }
         }
     }
 
@@ -190,5 +207,12 @@ class ExtensionTypeComponent extends \Cyan\Framework\ExtensionType
         unset($route_config['route_name']);
 
         $App->Router->route($allowed_methods, $route_name, $route_uri, $route_config);
+    }
+
+    public function install($base_path)
+    {
+        if (!file_exists($base_path) && !is_dir($base_path)) {
+            throw new ExtensionException(sprintf('path %s not exists',$base_path));
+        }
     }
 }

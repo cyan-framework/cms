@@ -50,7 +50,10 @@ class View extends \Cyan\Framework\View
             $this->setLayout($layout);
         }
 
-        $this->set('component', $this->getComponentName());
+        if (!$this->layout->exists('component'))
+            $this->set('component', $this->getComponentName());
+        if (!$this->layout->exists('view'))
+            $this->set('view', $this->getName());
 
         $Cyan = \Cyan::initialize();
         $this->buffer_content = $this->layout->render();

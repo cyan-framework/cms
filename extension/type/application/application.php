@@ -15,6 +15,22 @@ class ExtensionTypeApplication extends ExtensionType
         
         
     }
+
+    public function discover($base_path)
+    {
+        if (!file_exists($base_path) && !is_dir($base_path)) {
+            throw new ExtensionException(sprintf('path %s not exists',$base_path));
+        }
+
+
+    }
+
+    public function install($base_path)
+    {
+        if (!file_exists($base_path) && !is_dir($base_path)) {
+            throw new ExtensionException(sprintf('path %s not exists',$base_path));
+        }
+    }
 }
 
 ExtensionTypeApplicationHelper::initialize();

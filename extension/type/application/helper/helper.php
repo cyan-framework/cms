@@ -38,7 +38,7 @@ abstract class ExtensionTypeApplicationHelper
         if (!isset(self::$extension_manifests[$extension])) {
             throw new ExtensionException(sprintf('Extension %s manifest not found!',$extension));
         }
-        return simplexml_load_file(self::$extension_manifests[$extension],'\Cyan\Framework\XmlElement');
+        return simplexml_load_file(self::$extension_manifests[$extension], __NAMESPACE__.'\XmlElement');
     }
 
     public static function getPermissions($extension)

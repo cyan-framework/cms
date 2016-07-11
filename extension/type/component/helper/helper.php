@@ -56,7 +56,9 @@ abstract class ExtensionTypeComponentHelper
         $menu_path = strtolower($App->getName()).'/menu';
         $submenu_path = strtolower($App->getName()).'/submenu';
         foreach ($manifest->xpath($menu_path) as $menu_node) {
-            $menus[] = self::getMenuManifestNode($menu_node);
+            $menu = self::getMenuManifestNode($menu_node);
+            if (isset($menu->items) && empty($menu->items)) continue;
+            $menus[] = $menu;
         }
 
         return $menus;
@@ -70,6 +72,22 @@ abstract class ExtensionTypeComponentHelper
     {
         $Cyan = \Cyan::initialize();
         $App = $Cyan->getContainer('application');
+        $User = $App->getContainer('user');
+
+        $acl_menu_permission = $menu_node->getAttribute('acl_check');
+
+        if ($acl_menu_permission) {
+            $acl_check = explode(',',$acl_menu_permission);
+            $continue = false;
+            foreach ($acl_check as $acl_permission) {
+                if (!$continue && $User->can($acl_permission)) {
+                    $continue = true;
+                    break;
+                }
+            }
+
+            if (!$continue) return [];
+        }
 
         $route_name = $menu_node->getAttribute('route_name');
         $route_params = json_decode($menu_node->getAttribute('route_params','{}'), true);
@@ -85,7 +103,10 @@ abstract class ExtensionTypeComponentHelper
         if (isset($menu_node->submenu) && $menu_node->submenu->menu->count()) {
             $menu->items = [];
             foreach ($menu_node->submenu->menu as $submenu_node) {
-                $menu->items[] = self::getMenuManifestNode($submenu_node);
+                $submenu_items = self::getMenuManifestNode($submenu_node);
+                if (!empty($submenu_items)) {
+                    $menu->items[] = $submenu_items;
+                }
             }
         }
 
