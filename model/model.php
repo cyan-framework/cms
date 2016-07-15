@@ -84,6 +84,21 @@ abstract class Model
     }
 
     /**
+     * Return table name
+     *
+     * @return string
+     *
+     * @since 1.0.0
+     */
+    public function getTableName()
+    {
+        $name = empty($this->table_name) ? $this->getName() : $this->table_name ;
+        $name = Inflector::isSingular($name) ? $name : Inflector::singularize($name) ;
+
+        return $name;
+    }
+
+    /**
      * Get Database
      *
      * @return \Cyan\Framework\Database

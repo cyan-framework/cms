@@ -12,8 +12,7 @@ trait TraitModelItems
      */
     public function getItems()
     {
-        $name = Inflector::isSingular($this->getName()) ? $this->getName() : Inflector::singularize($this->getName()) ;
-        $table = $this->getTable($name);
+        $table = $this->getTable($this->getTableName());
         $rows = $table->fetchAll();
 
         return $rows;

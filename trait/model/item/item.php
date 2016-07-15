@@ -11,8 +11,7 @@ trait TraitModelItem
      */
     public function getItem($id = 0)
     {
-        $name = Inflector::isSingular($this->getName()) ? $this->getName() : Inflector::singularize($this->getName()) ;
-        $table = $this->getTable($name);
+        $table = $this->getTable($this->getTableName());
         $table->load($id);
         $item = $table->fetch();
 
@@ -23,8 +22,7 @@ trait TraitModelItem
 
     public function changeState($id,$state_id)
     {
-        $name = Inflector::isSingular($this->getName()) ? $this->getName() : Inflector::singularize($this->getName()) ;
-        $table_config = $this->getTable($name)->getConfig();
+        $table_config = $this->getTable($this->getTableName())->getConfig();
 
         $query = $this->getDbo()->getDatabaseQuery()->update($table_config['table_name'])->set('state_id = ?')->where($table_config['table_key'].' IN '.sprintf('(%s)',implode(',',$id)))->parameters([$state_id]);
         $sth = $this->getDbo()->prepare($query);
@@ -46,6 +44,14 @@ trait TraitModelItem
      */
     public function save(array $data)
     {
-        return $this->getTable($this->getName())->save($data);
+        return $this->getTable($this->getTableName())->save($data);
+    }
+
+    /**
+     * @param $item
+     */
+    protected function onAfterSaveHook(&$item)
+    {
+
     }
 }

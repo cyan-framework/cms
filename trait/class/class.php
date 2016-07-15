@@ -40,7 +40,8 @@ trait TraitClass
                 $instance->setContainer('factory_plugin', $this->getContainer('application')->getContainer('factory_plugin'));
             }
         }
-        if (is_callable([$instance,'initialize'])) {
+
+        if (is_callable([$instance,'initialize']) || method_exists($instance,'initialize')) {
             $instance->initialize();
         }
 

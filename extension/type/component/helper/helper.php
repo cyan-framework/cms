@@ -52,9 +52,9 @@ abstract class ExtensionTypeComponentHelper
         $App = $Cyan->getContainer('application');
 
         $manifest = self::getManifest($extension);
+
         /** @var XmlElement $menuNode */
-        $menu_path = strtolower($App->getName()).'/menu';
-        $submenu_path = strtolower($App->getName()).'/submenu';
+        $menu_path = sprintf('scope[@name="%s"]/menu',strtolower($App->getName()));
         foreach ($manifest->xpath($menu_path) as $menu_node) {
             $menu = self::getMenuManifestNode($menu_node);
             if (isset($menu->items) && empty($menu->items)) continue;
