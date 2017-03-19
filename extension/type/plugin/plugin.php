@@ -54,7 +54,13 @@ class ExtensionTypePlugin extends \Cyan\Framework\ExtensionType
             throw new ExtensionException(sprintf('path %s not exists',$base_path));
         }
 
+        $plugins = [];
+        foreach (glob(ROOT.'/plugins/*/*/install.xml') as $plugin_path) {
+            $plugin_info = explode('/',str_replace('/install.xml',null,str_replace(ROOT.'/plugins/',null,$plugin_path)));
+            $plugins[] = ['group' => $plugin_info[0], 'name' => $plugin_info[1]];
+        }
 
+        return $plugins;
     }
     
     public function install($base_path)

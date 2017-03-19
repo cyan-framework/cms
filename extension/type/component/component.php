@@ -52,7 +52,12 @@ class ExtensionTypeComponent extends \Cyan\Framework\ExtensionType
             throw new ExtensionException(sprintf('path %s not exists',$base_path));
         }
 
-        
+        $components = [];
+        foreach (glob($base_path.'*/install.xml') as $component_path) {
+            $components[] = str_replace('/install.xml',null,str_replace($base_path,null,$component_path));
+        }
+
+        return $components;
     }
 
     /**
@@ -214,5 +219,7 @@ class ExtensionTypeComponent extends \Cyan\Framework\ExtensionType
         if (!file_exists($base_path) && !is_dir($base_path)) {
             throw new ExtensionException(sprintf('path %s not exists',$base_path));
         }
+
+
     }
 }

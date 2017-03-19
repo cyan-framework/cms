@@ -22,7 +22,13 @@ class ExtensionTypeApplication extends ExtensionType
             throw new ExtensionException(sprintf('path %s not exists',$base_path));
         }
 
+        $apps = [];
+        foreach (glob($base_path.'*/install.xml') as $app_path) {
+            $app_name = str_replace('/install.xml',null,str_replace($base_path,null,$app_path));
+            $apps[] = $app_name;
+        }
 
+        return $apps;
     }
 
     public function install($base_path)
