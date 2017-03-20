@@ -20,7 +20,12 @@ abstract class ExtensionTypeComponentHelper
         $Cyan = \Cyan::initialize();
 
         if (empty(self::$extension_manifests)) {
-            foreach (glob($Cyan->Finder->getResource('components') . DIRECTORY_SEPARATOR . '*/extension.xml') as $component_manifest) {
+            $base_path = $Cyan->Finder->getResource('components');
+            if (is_array($base_path)) {
+                $base_path = end($base_path);
+            }
+
+            foreach (glob($base_path . DIRECTORY_SEPARATOR . '*/extension.xml') as $component_manifest) {
                 self::$extension_manifests[basename(dirname($component_manifest))] = $component_manifest;
             }
 
