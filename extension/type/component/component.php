@@ -99,9 +99,9 @@ class ExtensionTypeComponent extends \Cyan\Framework\ExtensionType
         $App = $this->getContainer('application');
         if ($App->getConfig()->exists('language')) {
             $app_language = $App->getConfig()->get('language');
-            $language_identifier = 'components:'.$this->component.'.'.$App->getName().'.language.'.$app_language.'.'.$app_language;
+            $language_identifier = 'language:'.$App->getName().'.'.$app_language.'.com_'.$this->component;
             if (!$App->Text->loadLanguageIdentifier($language_identifier)) {
-                $language_identifier = 'components:'.$this->component.'.language.'.$app_language.'.'.$app_language;
+                $language_identifier = 'components:'.$this->component.'.'.$App->getName().'.language.'.$app_language.'.com_'.$this->component;
                 $App->Text->loadLanguageIdentifier($language_identifier);
             }
         }
